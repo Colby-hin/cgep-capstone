@@ -1,80 +1,328 @@
-# cgep-app-starter
+# CGE-P Capstone: Governed Patient Intake Pipeline
 
-> Patient Intake API for "Acme Health". The deliberately-flawed workload your **CGE-P capstone** wraps with GRC controls.
+This repository adds an audit-defensible governance and compliance pipeline to an AWS serverless patient-intake application.
 
-## What this is
+## Implemented capabilities
 
-A minimal AWS workload: VPC, Lambda, API Gateway, DynamoDB, S3. It ingests patient intake submissions over HTTPS. Think of it as a system you have just inherited from an engineering team and been asked to make audit-defensible.
+- Terraform-managed AWS infrastructure
+- Customer-managed KMS encryption for Amazon S3 and DynamoDB
+- TLS-only access to the patient uploads bucket
+- S3 versioning and public-access blocking
+- Least-privilege Lambda IAM permissions
+- Multi-Region AWS CloudTrail with log-file validation
+- KMS-encrypted S3 Object Lock evidence vault
+- Versioned S3 Terraform backend with native state locking
+- GitHub OIDC roles with repository-restricted trust policies
+- Five OPA/Rego compliance policies
+- Ten passing Rego unit tests
+- Conftest enforcement against the real Terraform plan
+- Compliance evidence generation and vault-upload utilities
+- OSCAL catalog, profile, and component definition
 
-This repository ships **non-compliant on purpose**. Your job in the capstone is not to rewrite this app. Your job is to wrap it with the four CGE-P layers (Terraform GRC baseline, Rego policies, GitHub Actions evidence pipeline, OSCAL component) so the same workload becomes audit-defensible against HIPAA, SOC 2, and CMMC L2.
+## Repository structure
 
-## The deploy gate
+```text
+.github/workflows/
+  grc-gate.yml
+  grc-deploy-evidence.yml
 
-If you cannot deploy this starter, you cannot pass the capstone. Real GRC engineers inherit working systems. Step zero is making the system run.
+bootstrap/
+  backend/
+  github-oidc/
+
+docs/
+  control-mapping.md
+  design-decisions.md
+
+oscal/
+  hipaa-security-rule-catalog.json
+  hipaa-security-rule-profile.json
+  component-definition.json
+
+policies/
+  helpers.rego
+  s3_kms.rego
+  dynamodb_kms.rego
+  s3_tls.rego
+  s3_versioning.rego
+  iam_least_privilege.rego
+  *_test.rego
+
+scripts/
+  policy-gate.sh
+  evidence-bundle.sh
+  evidence-upload.sh
+
+terraform/
+  AWS application and compliance infrastructure
+```
+
+## HIPAA control scope
+
+The implementation maps technical safeguards to the following HIPAA Security Rule requirements:
+
+- 45 CFR 164.308(a)(7), contingency planning and recoverability
+- 45 CFR 164.312(a)(1), access control
+- 45 CFR 164.312(a)(2)(iv), encryption and decryption
+- 45 CFR 164.312(b), audit controls
+- 45 CFR 164.312(c)(1), integrity
+- 45 CFR 164.312(e)(1), transmission security
+
+See [docs/control-mapping.md](docs/control-mapping.md) for the detailed control-to-implementation mapping.
+
+## Implemented security controls
+
+### Encryption
+
+A customer-managed AWS KMS key protects:
+
+- Patient-upload objects in Amazon S3
+- Patient-intake records in DynamoDB
+- Compliance evidence stored in the evidence vault
+
+Automatic KMS key rotation is enabled.
+
+### Transport security
+
+The patient uploads bucket has a resource policy that denies requests when `aws:SecureTransport` is `false`.
+
+### Recoverability
+
+S3 versioning is enabled for:
+
+- Patient uploads
+- Compliance evidence
+- CloudTrail logs
+- Terraform remote state
+
+### Least privilege
+
+The Lambda execution policy is limited to the operations required by the application:
+
+- `dynamodb:PutItem`
+- `s3:PutObject`
+- Required KMS encryption and decryption actions
+
+The policy does not grant `dynamodb:*` or `s3:*`.
+
+### Audit logging
+
+A Multi-Region CloudTrail records management activity, includes global service events, validates log-file integrity, and delivers logs to a dedicated versioned S3 bucket.
+
+### Immutable evidence
+
+The compliance evidence vault uses:
+
+- S3 Object Lock
+- Governance-mode retention
+- S3 versioning
+- Customer-managed KMS encryption
+- Public-access blocking
+- TLS-only access
+
+## Policy-as-code
+
+The Rego policy suite denies Terraform plans that fail to provide:
+
+1. Customer-managed KMS encryption for patient uploads
+2. Customer-managed KMS encryption for DynamoDB
+3. TLS-only access to the uploads bucket
+4. S3 versioning for patient uploads
+5. Least-privilege Lambda data permissions
+
+Each policy has one compliant test and one noncompliant test.
+
+Verified local unit-test result:
+
+```text
+PASS: 10/10
+```
+
+Verified Conftest result against the real Terraform plan:
+
+```text
+5 tests, 5 passed, 0 warnings, 0 failures, 0 exceptions
+PASS: Terraform plan satisfies all five compliance policies.
+```
+
+## Local verification
+
+Configure the course sandbox environment:
 
 ```bash
-git clone https://github.com/GRCEngClub/cgep-app-starter
-cd cgep-app-starter
-
-# Confirm you're authenticated to the right account:
-make creds AWS_PROFILE=<your-sandbox-profile>
-
-make deploy AWS_PROFILE=<your-sandbox-profile>
-make test    AWS_PROFILE=<your-sandbox-profile>
+export AWS_PROFILE="lab23-sandbox"
+export AWS_REGION="us-east-1"
+export AWS_DEFAULT_REGION="us-east-1"
+export PATH="$HOME/.local/bin:$PATH"
 ```
 
-> **AWS SSO note:** if your profile is SSO-based, Terraform's AWS provider can fail to read it directly with `failed to find SSO session section`. The Makefile's `eval $(aws configure export-credentials)` pattern handles this. If you're running `terraform` commands by hand, do the same export first.
+Run Rego validation and unit tests:
 
-Expected output of `make test`:
-
-```json
-{
-    "submission_id": "f1e3...",
-    "status": "received"
-}
+```bash
+opa check --strict policies
+opa test policies
 ```
 
-When you're done exploring: `make destroy`.
+Run the complete Terraform and Conftest gate:
 
-## What you build on top
-
-Fork the repo into your own `cgep-capstone` and add:
-
-1. **Layer 1 — GRC baseline (Terraform).** KMS keys, an S3 evidence vault with Object Lock, a CloudTrail trail. Bring this starter's data stores under your CMK.
-2. **Layer 2 — OPA policy suite (Rego).** Five or more policies that catch the named gaps in [GAPS.md](GAPS.md). Each policy maps to at least one control from the framework you choose.
-3. **Layer 3 — GitHub Actions pipeline.** Plan → Conftest gate → apply → Cosign sign → upload to vault.
-4. **Layer 4 — OSCAL component.** A `component-definition.json` describing how your governed system implements its controls.
-
-Full brief: `docs/labs/07_01_capstone_brief.md` in the course content repo.
-
-## Framework mapping is required
-
-Your capstone must declare a primary framework: **HIPAA Security Rule**, **SOC 2 Trust Services Criteria**, or **CMMC Level 2**. Every policy carries at least one control ID from your chosen framework. Your OSCAL component's `control-implementations` reference your framework's catalog.
-
-A starter mapping is in [FRAMEWORKS.md](FRAMEWORKS.md). It is not the only valid mapping. You're expected to defend yours.
-
-## Cost
-
-Roughly $0 if destroyed within an hour. Lambda + API Gateway + DynamoDB + S3 are all pay-per-use, and an empty deployment generates no traffic. CloudTrail (which you add) costs cents.
-
-## Layout
-
-```
-cgep-app-starter/
-├── README.md            # this file
-├── WORKLOAD.md          # what the API does
-├── GAPS.md              # the named flaws your policies must catch
-├── FRAMEWORKS.md        # HIPAA / SOC 2 / CMMC mapping primer
-├── Makefile             # make deploy | test | destroy
-├── terraform/
-│   ├── main.tf
-│   ├── variables.tf
-│   ├── outputs.tf
-│   └── lambda/handler.py
-└── test/
-    └── intake.sh
+```bash
+./scripts/policy-gate.sh
 ```
 
-## License
+Generate a local evidence archive:
 
-MIT. Fork freely. Submissions remain learners' own work.
+```bash
+mkdir -p /tmp/cgep-evidence
+./scripts/evidence-bundle.sh /tmp/cgep-evidence
+```
+
+Validate an evidence upload without writing objects:
+
+```bash
+VALIDATE_ONLY=1 \
+  ./scripts/evidence-upload.sh \
+    example-bucket \
+    arn:aws:kms:us-east-1:000000000000:key/example \
+    evidence/example \
+    /path/to/evidence-archive.tar.gz
+```
+
+## Evidence generation
+
+`scripts/evidence-bundle.sh` captures:
+
+- Git repository and commit metadata
+- Terraform validation results
+- Terraform plan metadata
+- OPA strict-check results
+- OPA unit-test results
+- Conftest results
+- S3 encryption and versioning configuration
+- S3 TLS policy configuration
+- DynamoDB KMS configuration
+- KMS key metadata and rotation status
+- Lambda IAM policy configuration
+- CloudTrail configuration and logging status
+- Evidence-vault encryption and Object Lock configuration
+- A SHA-256 manifest for all evidence files
+- A SHA-256 value for the final archive
+
+`scripts/evidence-upload.sh` verifies after each upload:
+
+- A non-null S3 `VersionId`
+- `aws:kms` server-side encryption
+- Use of the capstone KMS key
+- Active Object Lock retention
+- A recorded artifact SHA-256 value
+
+## GitHub Actions
+
+### GRC Policy Gate
+
+`.github/workflows/grc-gate.yml` is designed to perform:
+
+1. Repository checkout
+2. Terraform installation
+3. OPA and Conftest installation
+4. GitHub OIDC authentication
+5. Terraform formatting and validation
+6. Rego formatting, strict checking, and unit tests
+7. Terraform plan generation
+8. Conftest enforcement
+
+### GRC Deploy and Evidence
+
+`.github/workflows/grc-deploy-evidence.yml` is designed to perform:
+
+1. Terraform plan
+2. Conftest gate
+3. Terraform apply
+4. Evidence-bundle generation
+5. Keyless Cosign signing
+6. Cosign identity verification
+7. Upload to the S3 Object Lock evidence vault
+8. S3 version, encryption, and retention receipt generation
+
+Both workflow files passed YAML parsing and Actionlint static validation.
+
+## Terraform state governance
+
+The application state was migrated from local storage to a versioned S3 backend.
+
+The backend includes:
+
+- S3 server-side encryption
+- Versioning
+- Public-access blocking
+- TLS-only access
+- Native Terraform lock-file support
+
+Post-migration Terraform planning reported no infrastructure changes.
+
+## GitHub OIDC
+
+GitHub Actions uses short-lived AWS credentials through GitHub OIDC.
+
+Two IAM roles separate responsibilities:
+
+- A plan role for Terraform planning, state reads, and lock-file operations
+- A deployment role for reviewed infrastructure changes and evidence uploads
+
+The trust policies are restricted to the capstone repository and approved GitHub subjects. No permanent AWS access keys are stored in the repository or workflow files.
+
+## OSCAL
+
+The `oscal/` directory contains:
+
+- A HIPAA Security Rule control catalog
+- A selected HIPAA control profile
+- An OSCAL component definition
+
+The component definition maps controls to:
+
+- Terraform resource addresses
+- Rego policy files
+- Evidence artifact paths
+
+All three documents passed the official OSCAL v1.2.2 JSON schemas.
+
+## Current status
+
+The following are implemented and locally verified:
+
+- AWS application infrastructure
+- Five Terraform security remediations
+- Customer-managed KMS encryption
+- Least-privilege Lambda IAM
+- CloudTrail audit logging
+- S3 Object Lock evidence vault
+- Remote Terraform state
+- GitHub OIDC IAM roles
+- Rego policy suite
+- Ten Rego unit tests
+- Real-plan Conftest evaluation
+- Local compliance policy gate
+- Evidence-bundle generation
+- Archive and manifest hash validation
+- Evidence-upload input validation
+- OSCAL schema validation
+- GitHub Actions static validation
+
+The following live proofs remain required before final submission:
+
+- Successful GitHub-hosted policy-gate run
+- Successful deployment and evidence workflow run
+- Verified keyless Cosign result
+- Immutable evidence-vault upload receipt
+- One compliant merged pull request
+- One intentionally noncompliant blocked pull request
+- Final merge into `main`
+
+Cancelled or queued GitHub-hosted runs are not presented as successful compliance evidence.
+
+## Documentation
+
+- [Implementation write-up](WRITEUP.md)
+- [Control mapping](docs/control-mapping.md)
+- [Design decisions](docs/design-decisions.md)
+- [OSCAL component definition](oscal/component-definition.json)
