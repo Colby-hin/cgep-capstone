@@ -1,0 +1,164 @@
+name: GRC Policy Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - "policies/**"
+      - "scripts/**"
+      - "bootstrap/**"
+      - ".github/workflows/grc-gate.yml"
+
+  push:
+    branches:
+      - capstone-foundation
+    paths:
+      - "terraform/**"
+      - "policies/**"
+      - "scripts/**"
+      - "bootstrap/**"
+      - ".github/workflows/grc-gate.yml"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: grc-policy-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: "us-east-1"
+  AWS_ACCOUNT_ID: "393036064603"
+  AWS_PLAN_ROLE_ARN: "arn:aws:iam::393036064603:role/cgep-capstone-github-plan"
+
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+  TF_STATE_BUCKET: "cgep-capstone-colby-hin-tfstate-393036064603"
+  TF_STATE_KEY: "cgep-capstone/terraform.tfstate"
+  TERRAFORM_VERSION: "1.15.8"
+
+  OPA_VERSION: "1.9.0"
+  CONFTEST_VERSION: "0.69.0"
+
+jobs:
+  policy-gate:
+    name: Terraform Plan and Rego Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6.0.2
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v4.0.1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
+
+      - name: Install OPA and Conftest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p "${HOME}/.local/bin"
+
+          curl -fsSLo /tmp/opa \
+            "https://openpolicyagent.org/downloads/v${OPA_VERSION}/opa_linux_amd64_static"
+
+          install -m 0755 \
+            /tmp/opa \
+            "${HOME}/.local/bin/opa"
+
+          curl -fsSLo /tmp/conftest.tar.gz \
+            "https://github.com/open-policy-agent/conftest/releases/download/v${CONFTEST_VERSION}/conftest_${CONFTEST_VERSION}_Linux_x86_64.tar.gz"
+
+          tar -xzf /tmp/conftest.tar.gz \
+            -C /tmp \
+            conftest
+
+          install -m 0755 \
+            /tmp/conftest \
+            "${HOME}/.local/bin/conftest"
+
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+
+      - name: Verify tool versions
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          terraform version
+          opa version
+          conftest --version
+          jq --version
+          aws --version
+
+      - name: Obtain short-lived AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: ${{ env.AWS_PLAN_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: cgep-plan-${{ github.run_id }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+
+      - name: Verify AWS identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          aws sts get-caller-identity
+
+      - name: Check Terraform formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          terraform -chdir=terraform fmt -check -recursive
+
+      - name: Check Rego formatting and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -z "$(opa fmt --diff policies)"
+          opa check --strict policies
+
+      - name: Run Terraform and Conftest policy gate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          export TF_CLI_ARGS_init="\
+          -backend-config=bucket=${TF_STATE_BUCKET} \
+          -backend-config=key=${TF_STATE_KEY} \
+          -backend-config=region=${AWS_REGION} \
+          -backend-config=use_lockfile=true"
+
+          ./scripts/policy-gate.sh |
+            tee /tmp/grc-policy-gate.txt
+
+          grep -F \
+            "PASS: Terraform plan satisfies all five compliance policies." \
+            /tmp/grc-policy-gate.txt
+
+      - name: Write workflow summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## GRC Policy Gate"
+            echo
+            echo "- Repository: \`${GITHUB_REPOSITORY}\`"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Event: \`${GITHUB_EVENT_NAME}\`"
+            echo "- AWS authentication: GitHub OIDC"
+            echo "- Terraform backend: versioned S3 with native locking"
+            echo "- Policies evaluated: 5"
+            echo "- OPA unit tests: 10"
+          } >> "${GITHUB_STEP_SUMMARY}"
