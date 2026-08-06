@@ -49,3 +49,18 @@ output "evidence_retention_days" {
   value       = var.evidence_retention_days
   description = "Default Governance-mode evidence retention period."
 }
+
+output "cloudtrail_name" {
+  value       = aws_cloudtrail.capstone.name
+  description = "Name of the capstone multi-Region CloudTrail."
+}
+
+output "cloudtrail_arn" {
+  value       = aws_cloudtrail.capstone.arn
+  description = "ARN of the capstone multi-Region CloudTrail."
+}
+
+output "cloudtrail_log_bucket" {
+  value       = aws_s3_bucket.cloudtrail_logs.id
+  description = "Dedicated S3 bucket that receives CloudTrail log files."
+}
