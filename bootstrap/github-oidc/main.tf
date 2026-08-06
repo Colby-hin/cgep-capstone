@@ -30,15 +30,22 @@ locals {
     data.aws_iam_openid_connect_provider.github[0].arn
   )
 
+  github_repository_immutable = "repo:${split("/", var.github_repository)[0]}@${var.github_owner_id}/${split("/", var.github_repository)[1]}@${var.github_repository_id}"
+
   plan_subjects = [
     "repo:${var.github_repository}:pull_request",
+    "${local.github_repository_immutable}:pull_request",
     "repo:${var.github_repository}:ref:refs/heads/main",
-    "repo:${var.github_repository}:ref:refs/heads/capstone-foundation"
+    "${local.github_repository_immutable}:ref:refs/heads/main",
+    "repo:${var.github_repository}:ref:refs/heads/capstone-foundation",
+    "${local.github_repository_immutable}:ref:refs/heads/capstone-foundation"
   ]
 
   deploy_subjects = [
     "repo:${var.github_repository}:ref:refs/heads/main",
-    "repo:${var.github_repository}:ref:refs/heads/capstone-foundation"
+    "${local.github_repository_immutable}:ref:refs/heads/main",
+    "repo:${var.github_repository}:ref:refs/heads/capstone-foundation",
+    "${local.github_repository_immutable}:ref:refs/heads/capstone-foundation"
   ]
 
   state_key      = "cgep-capstone/terraform.tfstate"

@@ -33,3 +33,24 @@ variable "capstone_kms_key_arn" {
   description = "Customer-managed KMS key protecting capstone evidence."
   type        = string
 }
+
+
+variable "github_owner_id" {
+  description = "Immutable numeric GitHub account ID for the repository owner."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[0-9]+$", var.github_owner_id))
+    error_message = "github_owner_id must contain only digits."
+  }
+}
+
+variable "github_repository_id" {
+  description = "Immutable numeric GitHub repository ID."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[0-9]+$", var.github_repository_id))
+    error_message = "github_repository_id must contain only digits."
+  }
+}
