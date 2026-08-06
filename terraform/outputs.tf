@@ -34,3 +34,18 @@ output "capstone_kms_alias" {
   value       = aws_kms_alias.capstone.name
   description = "Alias of the customer-managed KMS key used by the capstone."
 }
+
+output "evidence_vault_bucket" {
+  value       = aws_s3_bucket.evidence_vault.id
+  description = "Name of the KMS-encrypted S3 Object Lock evidence vault."
+}
+
+output "evidence_vault_arn" {
+  value       = aws_s3_bucket.evidence_vault.arn
+  description = "ARN of the S3 Object Lock evidence vault."
+}
+
+output "evidence_retention_days" {
+  value       = var.evidence_retention_days
+  description = "Default Governance-mode evidence retention period."
+}
