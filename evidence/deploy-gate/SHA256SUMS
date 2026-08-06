@@ -1,0 +1,4 @@
+51d934bec1cb6c463e7ee0bdac3be854fb47e05faa66f5c19502295ce65c60e2  evidence/deploy-gate/starter-test-output.txt
+27e0b6638f6b7738423dc63b4cc3007dc5dc55e7ddde84bba3ec5c3fc903a513  evidence/deploy-gate/terraform-version.txt
+89246953b986ccda273fe8abb517b2d6229cca329b3dfaff215f2a8fa363e820  evidence/deploy-gate/starter-source-commit.txt
+f25ed30ca3859669bc798e5e50e6784a12eb9324e43e8ed2da5be57f8a4ba811  evidence/deploy-gate/captured-at-utc.txt

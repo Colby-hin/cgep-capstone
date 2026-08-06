@@ -1,0 +1,5 @@
+POST https://ic1054gb3i.execute-api.us-east-1.amazonaws.com/intake
+{
+    "submission_id": "a856a29c-38c2-417a-9c0a-65d59b92cd94",
+    "status": "received"
+}
