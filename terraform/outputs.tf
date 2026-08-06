@@ -24,3 +24,13 @@ output "vpc_id" {
 output "private_subnet_ids" {
   value = aws_subnet.private[*].id
 }
+
+output "capstone_kms_key_arn" {
+  value       = aws_kms_key.capstone.arn
+  description = "ARN of the customer-managed KMS key used by the capstone."
+}
+
+output "capstone_kms_alias" {
+  value       = aws_kms_alias.capstone.name
+  description = "Alias of the customer-managed KMS key used by the capstone."
+}
