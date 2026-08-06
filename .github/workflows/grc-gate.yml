@@ -1,16 +1,6 @@
-name: GRC Policy Gate
+name: GRC Policy Gate - Ephemeral Recovery
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "terraform/**"
-      - "policies/**"
-      - "scripts/**"
-      - "bootstrap/**"
-      - ".github/workflows/grc-gate.yml"
-
   push:
     branches:
       - capstone-foundation
@@ -20,8 +10,6 @@ on:
       - "scripts/**"
       - "bootstrap/**"
       - ".github/workflows/grc-gate.yml"
-
-  workflow_dispatch:
 
 permissions:
   contents: read
@@ -47,8 +35,12 @@ env:
 
 jobs:
   policy-gate:
-    name: Terraform Plan and Rego Gate
-    runs-on: ubuntu-latest
+    name: Terraform Plan and Rego Gate - Ephemeral
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+      - cgep-one-shot
     timeout-minutes: 20
 
     steps:
