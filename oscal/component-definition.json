@@ -1,0 +1,246 @@
+{
+  "component-definition": {
+    "uuid": "9f8308d6-f02c-42b6-9a7c-d6083e25d66b",
+    "metadata": {
+      "title": "Acme Health Governed Patient Intake Component Definition",
+      "last-modified": "2026-08-06T19:36:01Z",
+      "version": "1.0.0",
+      "oscal-version": "1.2.2",
+      "roles": [
+        {
+          "id": "system-owner",
+          "title": "System Owner"
+        },
+        {
+          "id": "control-owner",
+          "title": "Control Owner"
+        }
+      ],
+      "parties": [
+        {
+          "uuid": "f325e3e4-cd6f-4e35-94b8-8408833c8c3e",
+          "type": "organization",
+          "name": "Acme Health Capstone Engineering"
+        }
+      ]
+    },
+    "components": [
+      {
+        "uuid": "135407be-73e6-4269-8aa3-0fac1eb9f059",
+        "type": "service",
+        "title": "Acme Health Patient Intake API",
+        "description": "An AWS serverless patient-intake service governed through Terraform, Rego policy-as-code, GitHub Actions, immutable evidence collection and HIPAA control mappings.",
+        "purpose": "Receive patient intake submissions while providing audit-defensible security and compliance controls.",
+        "responsible-roles": [
+          {
+            "role-id": "system-owner",
+            "party-uuids": [
+              "f325e3e4-cd6f-4e35-94b8-8408833c8c3e"
+            ]
+          },
+          {
+            "role-id": "control-owner",
+            "party-uuids": [
+              "f325e3e4-cd6f-4e35-94b8-8408833c8c3e"
+            ]
+          }
+        ],
+        "control-implementations": [
+          {
+            "uuid": "04e1a6ff-405f-4423-8b1e-29d2e7d8e066",
+            "source": "./hipaa-security-rule-profile.json",
+            "description": "HIPAA Security Rule safeguards implemented by the governed Acme Health Patient Intake service.",
+            "implemented-requirements": [
+              {
+                "uuid": "95ed603e-c555-4fdc-a475-958d3075b259",
+                "control-id": "hipaa-164-312-a-1",
+                "description": "The Lambda execution role uses a scoped inline IAM policy. It permits only the DynamoDB, S3 and KMS operations required by the intake handler and does not grant wildcard DynamoDB or S3 actions.",
+                "props": [
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_iam_role.lambda"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_iam_role_policy.lambda_inline"
+                  },
+                  {
+                    "name": "rego-policy",
+                    "value": "policies/iam_least_privilege.rego"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/lambda-inline-policy.json"
+                  }
+                ]
+              },
+              {
+                "uuid": "9b5dcf10-2475-4d71-b0c0-02f6c80877ac",
+                "control-id": "hipaa-164-312-a-2-iv",
+                "description": "The uploads bucket and DynamoDB intake table use the capstone customer-managed KMS key. Automatic KMS key rotation is enabled.",
+                "props": [
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_kms_key.capstone"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket_server_side_encryption_configuration.uploads"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_dynamodb_table.intake"
+                  },
+                  {
+                    "name": "rego-policy",
+                    "value": "policies/s3_kms.rego"
+                  },
+                  {
+                    "name": "rego-policy",
+                    "value": "policies/dynamodb_kms.rego"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/uploads-encryption.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/dynamodb-encryption.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/kms-key.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/kms-rotation.json"
+                  }
+                ]
+              },
+              {
+                "uuid": "78099b09-5791-47bd-a56a-2a99d47044b2",
+                "control-id": "hipaa-164-312-b",
+                "description": "A multi-Region AWS CloudTrail records management activity, includes global service events, validates log-file integrity and delivers logs to a dedicated versioned S3 bucket.",
+                "props": [
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_cloudtrail.capstone"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket.cloudtrail_logs"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket_versioning.cloudtrail_logs"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/cloudtrail-configuration.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/cloudtrail-status.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/cloudtrail-bucket-versioning.json"
+                  }
+                ]
+              },
+              {
+                "uuid": "8ab2141e-3fba-4192-8dc0-5edb70a9ac27",
+                "control-id": "hipaa-164-312-c-1",
+                "description": "Compliance evidence is stored in a KMS-encrypted S3 Object Lock vault. Governance-mode retention, versioning and cryptographic manifests protect evidence against undetected alteration or deletion.",
+                "props": [
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket.evidence_vault"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket_object_lock_configuration.evidence_vault"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket_versioning.evidence_vault"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket_server_side_encryption_configuration.evidence_vault"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/evidence-vault-encryption.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/evidence-vault-versioning.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/evidence-vault-object-lock.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "MANIFEST.sha256"
+                  }
+                ]
+              },
+              {
+                "uuid": "e2e650a5-43f4-4f70-a397-ff036bc4d347",
+                "control-id": "hipaa-164-312-e-1",
+                "description": "The uploads bucket policy denies requests made without secure transport. The patient-intake endpoint is exposed through the HTTPS API Gateway endpoint.",
+                "props": [
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket_policy.uploads_tls"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_apigatewayv2_api.intake"
+                  },
+                  {
+                    "name": "rego-policy",
+                    "value": "policies/s3_tls.rego"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/uploads-policy.json"
+                  }
+                ]
+              },
+              {
+                "uuid": "be3963c2-33c8-4cbc-b917-b8458e9a88f3",
+                "control-id": "hipaa-164-308-a-7",
+                "description": "S3 versioning is enabled for patient uploads and retained evidence, preserving prior object versions to support recovery and audit reconstruction.",
+                "props": [
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket_versioning.uploads"
+                  },
+                  {
+                    "name": "terraform-resource-address",
+                    "value": "aws_s3_bucket_versioning.evidence_vault"
+                  },
+                  {
+                    "name": "rego-policy",
+                    "value": "policies/s3_versioning.rego"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/uploads-versioning.json"
+                  },
+                  {
+                    "name": "evidence-artifact",
+                    "value": "aws/evidence-vault-versioning.json"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
