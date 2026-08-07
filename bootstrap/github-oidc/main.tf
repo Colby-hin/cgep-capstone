@@ -317,7 +317,8 @@ data "aws_iam_policy_document" "github_deploy_additional" {
     ]
 
     resources = [
-      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/cgep-*"
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/cgep-*",
+      "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/acme-health-intake-lambda-*"
     ]
   }
 
