@@ -14,7 +14,7 @@ This repository adds an audit-defensible governance and compliance pipeline to a
 - KMS-encrypted S3 Object Lock evidence vault
 - Versioned S3 Terraform backend with native state locking
 - GitHub OIDC roles with repository-restricted trust policies
-- Five OPA/Rego compliance policies
+- Five OPA/Rego compliance policies (enforcing six Terraform remediations)
 - Ten passing Rego unit tests
 - Conftest enforcement against the real Terraform plan
 - Compliance evidence generation and vault-upload utilities

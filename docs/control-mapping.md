@@ -38,6 +38,6 @@ tests, and live AWS verification succeed.
 - Evidence-vault encryption, versioning, and Object Lock configuration
 - A SHA-256 manifest covering the evidence files
 
-The hosted GitHub workflow, Cosign signature, final vault-upload receipt, and PR
-demonstrations remain live verification checkpoints and are not claimed as
-complete yet.
+The hosted GitHub workflow, Cosign signature, vault-upload receipt, and both the
+compliant and blocked pull requests have all executed. Signed evidence for a
+completed run is stored in the Object Lock vault and verifies end to end.

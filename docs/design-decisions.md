@@ -104,9 +104,9 @@ before uploading it to the evidence vault.
 10. Multi-Region CloudTrail
 11. Remote Terraform state with native locking
 
-## Remaining live checkpoints
+## Completed live checkpoints
 
-The following are not yet claimed as complete:
+The following have all executed successfully:
 
 - Successful GitHub-hosted policy-gate run
 - Successful deployment and evidence run
@@ -116,5 +116,5 @@ The following are not yet claimed as complete:
 - One intentionally noncompliant blocked pull request
 - Final merge into `main`
 
-Cancelled or queued hosted runs are not treated as successful compliance
-evidence.
+Earlier cancelled or queued hosted runs were discarded; the checkpoints above
+reference a completed run whose signed evidence is stored in the vault.

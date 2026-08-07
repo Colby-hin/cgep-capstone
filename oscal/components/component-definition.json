@@ -72,6 +72,12 @@
                     "name": "evidence-artifact",
                     "value": "aws/lambda-inline-policy.json"
                   }
+                ],
+                "links": [
+                  {
+                    "href": "#b1e7c2a4-9f3d-4e6b-8c11-7a2f4d9e0c53",
+                    "rel": "evidence"
+                  }
                 ]
               },
               {
@@ -115,6 +121,12 @@
                     "name": "evidence-artifact",
                     "value": "aws/kms-rotation.json"
                   }
+                ],
+                "links": [
+                  {
+                    "href": "#b1e7c2a4-9f3d-4e6b-8c11-7a2f4d9e0c53",
+                    "rel": "evidence"
+                  }
                 ]
               },
               {
@@ -145,6 +157,12 @@
                   {
                     "name": "evidence-artifact",
                     "value": "aws/cloudtrail-bucket-versioning.json"
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#b1e7c2a4-9f3d-4e6b-8c11-7a2f4d9e0c53",
+                    "rel": "evidence"
                   }
                 ]
               },
@@ -185,6 +203,12 @@
                     "name": "evidence-artifact",
                     "value": "MANIFEST.sha256"
                   }
+                ],
+                "links": [
+                  {
+                    "href": "#b1e7c2a4-9f3d-4e6b-8c11-7a2f4d9e0c53",
+                    "rel": "evidence"
+                  }
                 ]
               },
               {
@@ -207,6 +231,12 @@
                   {
                     "name": "evidence-artifact",
                     "value": "aws/uploads-policy.json"
+                  }
+                ],
+                "links": [
+                  {
+                    "href": "#b1e7c2a4-9f3d-4e6b-8c11-7a2f4d9e0c53",
+                    "rel": "evidence"
                   }
                 ]
               },
@@ -235,12 +265,46 @@
                     "name": "evidence-artifact",
                     "value": "aws/evidence-vault-versioning.json"
                   }
+                ],
+                "links": [
+                  {
+                    "href": "#b1e7c2a4-9f3d-4e6b-8c11-7a2f4d9e0c53",
+                    "rel": "evidence"
+                  }
                 ]
               }
             ]
           }
         ]
       }
-    ]
+    ],
+    "back-matter": {
+      "resources": [
+        {
+          "uuid": "b1e7c2a4-9f3d-4e6b-8c11-7a2f4d9e0c53",
+          "title": "Signed evidence bundle - run 31142670369",
+          "description": "Cosign-signed, SHA-256 manifested evidence bundle stored under S3 Object Lock (GOVERNANCE, retain-until 2026-08-14). Cosign verify-blob returns Verified OK against the public Sigstore log.",
+          "props": [
+            {
+              "name": "sha256",
+              "value": "4348783a51ad497d95def9e61356da687281743367c3fe46061db635542ebab9"
+            },
+            {
+              "name": "object-lock-mode",
+              "value": "GOVERNANCE"
+            },
+            {
+              "name": "retain-until",
+              "value": "2026-08-14T02:55:58Z"
+            }
+          ],
+          "rlinks": [
+            {
+              "href": "s3://acme-health-intake-evidence-e8072135/evidence/Colby-hin/cgep-capstone/1feba8c0fe81fe09e3bf6b126eee3290606a42ce/run-31142670369-attempt-1/cgep-evidence-31142670369-20260807T025524Z.tar.gz"
+            }
+          ]
+        }
+      ]
+    }
   }
 }

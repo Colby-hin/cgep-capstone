@@ -220,7 +220,7 @@ The evidence generator was executed locally. The resulting archive and internal 
 - A retain-until date
 - The local SHA-256 value
 
-The uploader has been validated locally using its validation-only mode. The final live upload will be performed by the deployment workflow after evidence signing.
+The uploader runs as the final step of the deployment workflow. It has executed successfully in a completed run: signed evidence for run 31142670369 is stored in the vault, its Cosign signature verifies against the public Sigstore log, its SHA-256 recomputes to the committed value, and Object Lock retention (GOVERNANCE, retain-until 2026-08-14) is active.
 
 ## Terraform state governance
 
