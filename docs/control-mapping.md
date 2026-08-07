@@ -9,6 +9,7 @@ tests, and live AWS verification succeed.
 | GAP-02 | Customer-managed KMS encryption for intake records | 45 CFR 164.312(a)(2)(iv) | `aws_dynamodb_table.intake` | `policies/dynamodb_kms.rego` | Implemented |
 | GAP-03 | Deny non-TLS access to the uploads bucket | 45 CFR 164.312(e)(1) | `aws_s3_bucket_policy.uploads_tls` | `policies/s3_tls.rego` | Implemented |
 | GAP-04 | Enable versioning for patient uploads | 45 CFR 164.308(a)(7) | `aws_s3_bucket_versioning.uploads` | `policies/s3_versioning.rego` | Implemented |
+| GAP-05 | Deploy Lambda in existing VPC private subnets | 45 CFR 164.312(a)(1) | `aws_lambda_function.intake`, `aws_security_group.lambda`, `aws_vpc_endpoint.s3`, `aws_vpc_endpoint.dynamodb` | Live AWS verification | Implemented |
 | GAP-07 | Replace broad Lambda permissions with least privilege | 45 CFR 164.312(a)(1) | `aws_iam_role_policy.lambda_inline` | `policies/iam_least_privilege.rego` | Implemented |
 
 ## Supporting controls

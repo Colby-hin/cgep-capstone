@@ -54,6 +54,10 @@ Detailed mappings are maintained in `docs/control-mapping.md` and `oscal/compone
 
 ## Infrastructure remediation
 
+### GAP-05 — Private VPC placement
+
+The intake Lambda now runs in two private subnets in the existing starter VPC. A dedicated security group restricts outbound traffic to HTTPS, while S3 and DynamoDB gateway endpoints preserve private service access without a NAT gateway. Live tests confirmed both DynamoDB submission writes and KMS-encrypted S3 attachment uploads.
+
 ### Customer-managed encryption
 
 A customer-managed KMS key protects:

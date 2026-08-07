@@ -54,7 +54,7 @@
               {
                 "uuid": "95ed603e-c555-4fdc-a475-958d3075b259",
                 "control-id": "hipaa-164-312-a-1",
-                "description": "The Lambda execution role uses a scoped inline IAM policy. It permits only the DynamoDB, S3 and KMS operations required by the intake handler and does not grant wildcard DynamoDB or S3 actions.",
+                "description": "The Lambda execution role uses a scoped inline IAM policy. It permits only the DynamoDB, S3 and KMS operations required by the intake handler and does not grant wildcard DynamoDB or S3 actions. The intake Lambda is deployed in two private subnets in the existing VPC. A dedicated security group and S3 and DynamoDB gateway endpoints provide controlled private service access without a NAT gateway.",
                 "props": [
                   {
                     "name": "terraform-resource-address",

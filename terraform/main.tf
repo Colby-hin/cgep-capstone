@@ -142,7 +142,7 @@ resource "aws_s3_bucket" "uploads" {
 
 ######################################################################
 # Lambda — the intake handler.
-# GAP-05: not deployed inside the VPC.
+# GAP-05: remediated with private-subnet Lambda deployment.
 # GAP-06: no reserved concurrency, no DLQ, no X-Ray.
 # GAP-07: IAM role has dynamodb:* and s3:* on the resources (over-broad).
 ######################################################################

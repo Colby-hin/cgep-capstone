@@ -9,6 +9,7 @@ This repository adds an audit-defensible governance and compliance pipeline to a
 - TLS-only access to the patient uploads bucket
 - S3 versioning and public-access blocking
 - Least-privilege Lambda IAM permissions
+- Lambda deployed in private VPC subnets with S3 and DynamoDB gateway endpoints
 - Multi-Region AWS CloudTrail with log-file validation
 - KMS-encrypted S3 Object Lock evidence vault
 - Versioned S3 Terraform backend with native state locking
