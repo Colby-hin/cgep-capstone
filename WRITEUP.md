@@ -348,7 +348,14 @@ The following have been completed:
 - Live immutable evidence upload receipt
 - One compliant merged pull request
 - One intentionally noncompliant blocked pull request
-Earlier GitHub-hosted runs were queued or cancelled before a runner completed the job. Those runs are not presented as successful compliance evidence.
+
+
+The newest signed evidence bundle can be verified directly from the vault:
+
+- **Object:** `s3://acme-health-intake-evidence-e8072135/evidence/Colby-hin/cgep-capstone/1feba8c0fe81fe09e3bf6b126eee3290606a42ce/run-31142670369-attempt-1/cgep-evidence-31142670369-20260807T025524Z.tar.gz`
+- **Object Lock retention:** GOVERNANCE mode, retain-until 2026-08-14 (confirmed via `s3api get-object-retention`).
+- **SHA-256:** recomputes to the value in the committed `.sha256` sidecar.
+- **Cosign:** `cosign verify-blob --bundle <bundle>.sigstore.json --certificate-identity-regexp 'github.com/Colby-hin/cgep-capstone' --certificate-oidc-issuer https://token.actions.githubusercontent.com` returns `Verified OK`.
 
 ## Grader verification
 
@@ -393,4 +400,3 @@ The primary grader-facing files are:
 - The environment is a temporary course sandbox rather than a production AWS organization.
 - The evidence vault uses governance mode with a seven-day default retention period.
 - The OSCAL catalog is a capstone-specific HIPAA selection, not a complete reproduction of every HIPAA Security Rule provision.
-- Final hosted workflow, Cosign, pull-request, and immutable-upload proofs remain dependent on successful GitHub-hosted Actions execution.
