@@ -400,3 +400,11 @@ The primary grader-facing files are:
 - The environment is a temporary course sandbox rather than a production AWS organization.
 - The evidence vault uses governance mode with a seven-day default retention period.
 - The OSCAL catalog is a capstone-specific HIPAA selection, not a complete reproduction of every HIPAA Security Rule provision.
+- GAP-06 (Lambda reserved concurrency, dead-letter queue, X-Ray tracing) and GAP-08 (API Gateway access logging, throttling, WAF) were deliberately left out of scope. Both are operational-resilience and edge-protection gaps rather than PHI-at-rest or access-control gaps, so they ranked below the six confidentiality and integrity gaps that map directly to the HIPAA Security Rule technical safeguards this capstone prioritizes. Six gaps closed cleanly with full policy enforcement and signed evidence was chosen over eight gaps with weaker integration.
+
+## What I would do with another sprint
+
+- Close GAP-06: add reserved concurrency, a dead-letter queue, and X-Ray tracing to the intake Lambda, enforced by a new Rego policy.
+- Close GAP-08: wire API Gateway access logging to CloudWatch, add stage throttling, and front the API with a WAF; enforce access-log configuration in policy.
+- Move the evidence vault to COMPLIANCE-mode Object Lock in a separate evidence-only AWS account for a stronger trust boundary.
+- Add AWS Config conformance-pack drift detection so controls are verified continuously, not only at merge time.
