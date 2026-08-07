@@ -245,7 +245,7 @@ VALIDATE_ONLY=1 \
 7. Upload to the S3 Object Lock evidence vault
 8. S3 version, encryption, and retention receipt generation
 
-Both workflow files passed YAML parsing and Actionlint static validation.
+The consolidated `grc-gate.yml` workflow passed YAML parsing and Actionlint static validation.
 
 ## Terraform state governance
 
@@ -310,7 +310,7 @@ The following are implemented and locally verified:
 - OSCAL schema validation
 - GitHub Actions static validation
 
-The following live proofs remain required before final submission:
+The following live proofs have been completed:
 
 - Successful GitHub-hosted policy-gate run
 - Successful deployment and evidence workflow run
@@ -318,8 +318,6 @@ The following live proofs remain required before final submission:
 - Immutable evidence-vault upload receipt
 - One compliant merged pull request
 - One intentionally noncompliant blocked pull request
-- Final merge into `main`
-
 Cancelled or queued GitHub-hosted runs are not presented as successful compliance evidence.
 
 ## Documentation

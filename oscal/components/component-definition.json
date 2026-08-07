@@ -48,7 +48,7 @@
         "control-implementations": [
           {
             "uuid": "04e1a6ff-405f-4423-8b1e-29d2e7d8e066",
-            "source": "../hipaa-security-rule-profile.json",
+            "source": "../hipaa-security-rule-catalog.json",
             "description": "HIPAA Security Rule safeguards implemented by the governed Acme Health Patient Intake service.",
             "implemented-requirements": [
               {
