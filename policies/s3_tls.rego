@@ -21,9 +21,7 @@ s3_tls_compliant if {
 	condition := object.get(statement, "Condition", {})
 	bool_condition := object.get(condition, "Bool", {})
 
-	lower(sprintf("%v", [
-		object.get(bool_condition, "aws:SecureTransport", ""),
-	])) == "false"
+	lower(sprintf("%v", [object.get(bool_condition, "aws:SecureTransport", "")])) == "false"
 }
 
 s3_tls_deny contains message if {

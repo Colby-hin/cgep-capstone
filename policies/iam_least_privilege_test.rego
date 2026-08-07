@@ -43,33 +43,21 @@ iam_fail_policy := {
 	],
 }
 
-iam_pass_plan := {
-	"resource_changes": [
-		{
-			"address": "aws_iam_role_policy.lambda_inline",
-			"change": {
-				"actions": ["update"],
-				"after": {
-					"policy": json.marshal(iam_pass_policy),
-				},
-			},
-		},
-	],
-}
+iam_pass_plan := {"resource_changes": [{
+	"address": "aws_iam_role_policy.lambda_inline",
+	"change": {
+		"actions": ["update"],
+		"after": {"policy": json.marshal(iam_pass_policy)},
+	},
+}]}
 
-iam_fail_plan := {
-	"resource_changes": [
-		{
-			"address": "aws_iam_role_policy.lambda_inline",
-			"change": {
-				"actions": ["update"],
-				"after": {
-					"policy": json.marshal(iam_fail_policy),
-				},
-			},
-		},
-	],
-}
+iam_fail_plan := {"resource_changes": [{
+	"address": "aws_iam_role_policy.lambda_inline",
+	"change": {
+		"actions": ["update"],
+		"after": {"policy": json.marshal(iam_fail_policy)},
+	},
+}]}
 
 test_iam_least_privilege_pass if {
 	result := iam_least_privilege_deny with input as iam_pass_plan
