@@ -111,8 +111,12 @@ resource "aws_dynamodb_table" "intake" {
     type = "S"
   }
 
-  # No server_side_encryption block. Defaults to AWS-owned key.
-  # GAP-02: capstone learner expected to add this with a customer-owned key.
+  # GAP-02 remediation: protect patient submissions with the
+  # customer-managed capstone KMS key.
+  server_side_encryption {
+    enabled     = true
+    kms_key_arn = aws_kms_key.capstone.arn
+  }
 }
 
 ######################################################################
@@ -138,7 +142,7 @@ resource "aws_s3_bucket" "uploads" {
 
 ######################################################################
 # Lambda — the intake handler.
-# GAP-05: not deployed inside the VPC.
+# GAP-05: remediated with private-subnet Lambda deployment.
 # GAP-06: no reserved concurrency, no DLQ, no X-Ray.
 # GAP-07: IAM role has dynamodb:* and s3:* on the resources (over-broad).
 ######################################################################
@@ -172,18 +176,33 @@ resource "aws_iam_role_policy" "lambda_inline" {
   name = "intake-data-access"
   role = aws_iam_role.lambda.id
 
+  # GAP-07 remediation: grant only the operations used by handler.py.
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
+        Sid      = "WritePatientSubmission"
         Effect   = "Allow"
-        Action   = "dynamodb:*"
+        Action   = ["dynamodb:PutItem"]
         Resource = aws_dynamodb_table.intake.arn
       },
       {
+        Sid      = "UploadPatientAttachment"
         Effect   = "Allow"
-        Action   = "s3:*"
-        Resource = ["${aws_s3_bucket.uploads.arn}", "${aws_s3_bucket.uploads.arn}/*"]
+        Action   = ["s3:PutObject"]
+        Resource = "${aws_s3_bucket.uploads.arn}/*"
+      },
+      {
+        Sid    = "UseUploadsEncryptionKey"
+        Effect = "Allow"
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = aws_kms_key.capstone.arn
       }
     ]
   })
@@ -205,8 +224,14 @@ resource "aws_lambda_function" "intake" {
     }
   }
 
-  # GAP-05: no vpc_config block. Learner expected to add one referencing
-  # aws_subnet.private[*] and a hardened security group.
+  vpc_config {
+    subnet_ids         = aws_subnet.private[*].id
+    security_group_ids = [aws_security_group.lambda.id]
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.lambda_vpc_access
+  ]
 }
 
 ######################################################################

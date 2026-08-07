@@ -15,3 +15,9 @@ terraform/lambda/handler.zip
 # Local
 evidence/
 .DS_Store
+
+# Capstone: allow reviewed deploy-gate evidence
+!evidence/
+evidence/*
+!evidence/deploy-gate/
+!evidence/deploy-gate/**

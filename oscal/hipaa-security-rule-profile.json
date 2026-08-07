@@ -1,0 +1,28 @@
+{
+  "profile": {
+    "uuid": "a151c553-a9ae-4bd2-bded-47652e8235cf",
+    "metadata": {
+      "title": "Acme Health Patient Intake HIPAA Profile",
+      "last-modified": "2026-08-06T19:36:01Z",
+      "version": "1.0.0",
+      "oscal-version": "1.2.2"
+    },
+    "imports": [
+      {
+        "href": "./hipaa-security-rule-catalog.json",
+        "include-controls": [
+          {
+            "with-ids": [
+              "hipaa-164-308-a-7",
+              "hipaa-164-312-a-1",
+              "hipaa-164-312-a-2-iv",
+              "hipaa-164-312-b",
+              "hipaa-164-312-c-1",
+              "hipaa-164-312-e-1"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

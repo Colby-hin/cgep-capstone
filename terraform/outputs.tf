@@ -24,3 +24,43 @@ output "vpc_id" {
 output "private_subnet_ids" {
   value = aws_subnet.private[*].id
 }
+
+output "capstone_kms_key_arn" {
+  value       = aws_kms_key.capstone.arn
+  description = "ARN of the customer-managed KMS key used by the capstone."
+}
+
+output "capstone_kms_alias" {
+  value       = aws_kms_alias.capstone.name
+  description = "Alias of the customer-managed KMS key used by the capstone."
+}
+
+output "evidence_vault_bucket" {
+  value       = aws_s3_bucket.evidence_vault.id
+  description = "Name of the KMS-encrypted S3 Object Lock evidence vault."
+}
+
+output "evidence_vault_arn" {
+  value       = aws_s3_bucket.evidence_vault.arn
+  description = "ARN of the S3 Object Lock evidence vault."
+}
+
+output "evidence_retention_days" {
+  value       = var.evidence_retention_days
+  description = "Default Governance-mode evidence retention period."
+}
+
+output "cloudtrail_name" {
+  value       = aws_cloudtrail.capstone.name
+  description = "Name of the capstone multi-Region CloudTrail."
+}
+
+output "cloudtrail_arn" {
+  value       = aws_cloudtrail.capstone.arn
+  description = "ARN of the capstone multi-Region CloudTrail."
+}
+
+output "cloudtrail_log_bucket" {
+  value       = aws_s3_bucket.cloudtrail_logs.id
+  description = "Dedicated S3 bucket that receives CloudTrail log files."
+}

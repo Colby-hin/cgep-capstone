@@ -1,0 +1,92 @@
+{
+  "catalog": {
+    "uuid": "7155ed67-4188-41be-801e-579c0ed23a95",
+    "metadata": {
+      "title": "CGE-P HIPAA Security Rule Control Catalog",
+      "last-modified": "2026-08-06T19:36:01Z",
+      "version": "1.0.0",
+      "oscal-version": "1.2.2"
+    },
+    "groups": [
+      {
+        "id": "hipaa-security-rule",
+        "class": "family",
+        "title": "HIPAA Security Rule",
+        "controls": [
+          {
+            "id": "hipaa-164-308-a-7",
+            "class": "control",
+            "title": "Contingency Plan",
+            "parts": [
+              {
+                "id": "hipaa-164-308-a-7-statement",
+                "name": "statement",
+                "prose": "Establish and maintain procedures for responding to emergencies or other events that damage systems containing electronic protected health information."
+              }
+            ]
+          },
+          {
+            "id": "hipaa-164-312-a-1",
+            "class": "control",
+            "title": "Access Control",
+            "parts": [
+              {
+                "id": "hipaa-164-312-a-1-statement",
+                "name": "statement",
+                "prose": "Implement technical policies and procedures that allow access to electronic protected health information only by authorized persons or software programs."
+              }
+            ]
+          },
+          {
+            "id": "hipaa-164-312-a-2-iv",
+            "class": "control",
+            "title": "Encryption and Decryption",
+            "parts": [
+              {
+                "id": "hipaa-164-312-a-2-iv-statement",
+                "name": "statement",
+                "prose": "Implement a mechanism to encrypt and decrypt electronic protected health information where reasonable and appropriate."
+              }
+            ]
+          },
+          {
+            "id": "hipaa-164-312-b",
+            "class": "control",
+            "title": "Audit Controls",
+            "parts": [
+              {
+                "id": "hipaa-164-312-b-statement",
+                "name": "statement",
+                "prose": "Implement mechanisms that record and examine activity in systems that contain or use electronic protected health information."
+              }
+            ]
+          },
+          {
+            "id": "hipaa-164-312-c-1",
+            "class": "control",
+            "title": "Integrity",
+            "parts": [
+              {
+                "id": "hipaa-164-312-c-1-statement",
+                "name": "statement",
+                "prose": "Implement policies and procedures that protect electronic protected health information from improper alteration or destruction."
+              }
+            ]
+          },
+          {
+            "id": "hipaa-164-312-e-1",
+            "class": "control",
+            "title": "Transmission Security",
+            "parts": [
+              {
+                "id": "hipaa-164-312-e-1-statement",
+                "name": "statement",
+                "prose": "Implement technical safeguards that protect electronic protected health information transmitted over electronic communications networks."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
