@@ -293,7 +293,7 @@ All three documents passed the official OSCAL v1.2.2 JSON schemas.
 The following are implemented and locally verified:
 
 - AWS application infrastructure
-- Five Terraform security remediations
+- Six Terraform security remediations
 - Customer-managed KMS encryption
 - Least-privilege Lambda IAM
 - CloudTrail audit logging

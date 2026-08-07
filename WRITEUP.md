@@ -390,7 +390,6 @@ The primary grader-facing files are:
 - `docs/design-decisions.md`
 - `oscal/components/component-definition.json`
 - `.github/workflows/grc-gate.yml`
-- `.github/workflows/grc-gate.yml`
 - `scripts/policy-gate.sh`
 - `scripts/evidence-bundle.sh`
 - `scripts/evidence-upload.sh`
