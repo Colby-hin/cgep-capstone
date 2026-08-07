@@ -125,7 +125,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -z "$(opa fmt --diff policies)"
+          test -z "$(opa fmt --diff --fail policies/*.rego)"
           opa check --strict policies
 
       - name: Run Terraform and Conftest policy gate
@@ -241,7 +241,7 @@ jobs:
           set -euo pipefail
 
           terraform -chdir=terraform fmt -check -recursive
-          test -z "$(opa fmt --diff policies)"
+          test -z "$(opa fmt --diff --fail policies/*.rego)"
           opa check --strict policies
           opa test policies
 
