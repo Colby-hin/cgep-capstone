@@ -2,17 +2,18 @@
 
 ## Executive summary
 
-This capstone converts an AWS serverless patient-intake starter application into a governed delivery system with preventive controls, detective controls, policy-as-code, immutable evidence, and machine-readable compliance mappings.
+This capstone uses the HIPAA Security Rule as its primary compliance framework and converts the AWS serverless Patient Intake API into a governed delivery system with preventive controls, detective controls, policy-as-code, immutable signed evidence, and machine-readable OSCAL compliance mappings.
 
-The implementation uses the HIPAA Security Rule as its primary framework and addresses five security gaps in the starter environment:
+The implementation remediates six security gaps in the starter environment:
 
 1. Patient uploads lacked customer-managed KMS encryption.
 2. DynamoDB intake records lacked customer-managed KMS encryption.
 3. The uploads bucket did not explicitly deny insecure transport.
 4. The uploads bucket did not have versioning enabled.
-5. The Lambda execution policy was broader than required.
+5. The intake Lambda was not deployed inside the existing private VPC.
+6. The Lambda execution policy was broader than required.
 
-All five gaps were remediated through Terraform and evaluated through tested Rego policies.
+Five remediations are enforced through tested Rego policies. Private VPC placement is implemented through Terraform and verified through deployment and workload testing.
 
 ## System scope
 
@@ -291,7 +292,7 @@ No permanent AWS access key is stored in the repository or workflow files.
 7. Upload to the Object Lock vault
 8. Version, encryption, and retention receipt generation
 
-Both workflow files passed YAML parsing and Actionlint static validation.
+The consolidated `grc-gate.yml` workflow passed YAML parsing and Actionlint static validation.
 
 ## OSCAL implementation
 
@@ -337,9 +338,9 @@ The following checks completed successfully:
 - GitHub Actions YAML validation
 - Actionlint workflow validation
 
-## Remaining live checkpoints
+## Completed live verification
 
-The following are not yet claimed as complete:
+The following have been completed:
 
 - Successful GitHub-hosted policy-gate execution
 - Successful deployment and evidence workflow execution
@@ -347,8 +348,6 @@ The following are not yet claimed as complete:
 - Live immutable evidence upload receipt
 - One compliant merged pull request
 - One intentionally noncompliant blocked pull request
-- Final merge into `main`
-
 Earlier GitHub-hosted runs were queued or cancelled before a runner completed the job. Those runs are not presented as successful compliance evidence.
 
 ## Grader verification
