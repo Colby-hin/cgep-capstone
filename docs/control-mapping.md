@@ -20,7 +20,7 @@ tests, and live AWS verification succeed.
 | Customer-managed KMS key with rotation | 45 CFR 164.312(a)(2)(iv) | `aws_kms_key.capstone` | Implemented |
 | Versioned remote Terraform state with native locking | Configuration integrity and recoverability | `bootstrap/backend`, `terraform/backend.tf` | Implemented |
 | Repository-restricted GitHub OIDC roles | 45 CFR 164.312(a)(1) | `bootstrap/github-oidc` | Implemented |
-| Machine-readable OSCAL control mappings | Assessment and audit support | `oscal/component-definition.json` | Implemented |
+| Machine-readable OSCAL control mappings | Assessment and audit support | `oscal/components/component-definition.json` | Implemented |
 
 ## Verification evidence
 

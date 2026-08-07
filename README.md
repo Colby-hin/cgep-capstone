@@ -24,7 +24,7 @@ This repository adds an audit-defensible governance and compliance pipeline to a
 ```text
 .github/workflows/
   grc-gate.yml
-  grc-deploy-evidence.yml
+
 
 bootstrap/
   backend/
@@ -37,7 +37,8 @@ docs/
 oscal/
   hipaa-security-rule-catalog.json
   hipaa-security-rule-profile.json
-  component-definition.json
+  components/
+        component-definition.json
 
 policies/
   helpers.rego
@@ -232,7 +233,7 @@ VALIDATE_ONLY=1 \
 
 ### GRC Deploy and Evidence
 
-`.github/workflows/grc-deploy-evidence.yml` is designed to perform:
+`.github/workflows/grc-gate.yml` is designed to perform:
 
 1. Terraform plan
 2. Conftest gate
@@ -325,4 +326,4 @@ Cancelled or queued GitHub-hosted runs are not presented as successful complianc
 - [Implementation write-up](WRITEUP.md)
 - [Control mapping](docs/control-mapping.md)
 - [Design decisions](docs/design-decisions.md)
-- [OSCAL component definition](oscal/component-definition.json)
+- [OSCAL component definition](oscal/components/component-definition.json)

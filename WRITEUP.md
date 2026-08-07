@@ -50,7 +50,7 @@ The implementation maps technical controls to:
 - 45 CFR 164.312(c)(1), integrity
 - 45 CFR 164.312(e)(1), transmission security
 
-Detailed mappings are maintained in `docs/control-mapping.md` and `oscal/component-definition.json`.
+Detailed mappings are maintained in `docs/control-mapping.md` and `oscal/components/component-definition.json`.
 
 ## Infrastructure remediation
 
@@ -276,7 +276,7 @@ No permanent AWS access key is stored in the repository or workflow files.
 
 ### GRC Deploy and Evidence
 
-`.github/workflows/grc-deploy-evidence.yml` is designed to perform:
+`.github/workflows/grc-gate.yml` is designed to perform:
 
 1. Terraform plan
 2. Conftest gate
@@ -295,7 +295,7 @@ The repository contains:
 
 - `oscal/hipaa-security-rule-catalog.json`
 - `oscal/hipaa-security-rule-profile.json`
-- `oscal/component-definition.json`
+- `oscal/components/component-definition.json`
 
 The component definition maps HIPAA controls to:
 
@@ -369,7 +369,7 @@ OSCAL JSON syntax can be checked with:
 jq empty \
   oscal/hipaa-security-rule-catalog.json \
   oscal/hipaa-security-rule-profile.json \
-  oscal/component-definition.json
+  oscal/components/component-definition.json
 ```
 
 The primary grader-facing files are:
@@ -378,9 +378,9 @@ The primary grader-facing files are:
 - `WRITEUP.md`
 - `docs/control-mapping.md`
 - `docs/design-decisions.md`
-- `oscal/component-definition.json`
+- `oscal/components/component-definition.json`
 - `.github/workflows/grc-gate.yml`
-- `.github/workflows/grc-deploy-evidence.yml`
+- `.github/workflows/grc-gate.yml`
 - `scripts/policy-gate.sh`
 - `scripts/evidence-bundle.sh`
 - `scripts/evidence-upload.sh`
