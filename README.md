@@ -1,3 +1,10 @@
+## The Big Picture
+
+This diagram shows how the capstone connects the AWS application, security controls, policy-as-code testing, CI/CD enforcement, evidence collection, and compliance traceability into one end-to-end GRC Engineering workflow.
+
+<img width="1536" height="1024" alt="The big picture" src="https://github.com/user-attachments/assets/c7330cc0-cc72-43a3-bdeb-1165b012bab7" />
+
+
 # CGE-P Capstone: Governed Patient Intake Pipeline
 
 This repository adds an audit-defensible governance and compliance pipeline to an AWS serverless patient-intake application.
